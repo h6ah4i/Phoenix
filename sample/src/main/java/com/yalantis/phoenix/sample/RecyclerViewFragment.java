@@ -50,16 +50,46 @@ public class RecyclerViewFragment extends BaseRefreshFragment {
 
         mDragDropManager.setInitiateOnLongPress(true);
         mDragDropManager.setInitiateOnMove(false);
+        mDragDropManager.setOnItemDragEventListener(new RecyclerViewDragDropManager.OnItemDragEventListener() {
+            @Override
+            public void onItemDragStarted(int position) {
+                mPullToRefreshView.setEnabled(false);
+            }
+
+            @Override
+            public void onItemDragPositionChanged(int fromPosition, int toPosition) {
+            }
+
+            @Override
+            public void onItemDragFinished(int fromPosition, int toPosition, boolean result) {
+                mPullToRefreshView.setEnabled(true);
+            }
+        });
+
 
         mSwipeManager = new RecyclerViewSwipeManager();
+        mSwipeManager.setOnItemSwipeEventListener(new RecyclerViewSwipeManager.OnItemSwipeEventListener() {
+            @Override
+            public void onItemSwipeStarted(int position) {
+                mPullToRefreshView.setEnabled(false);
+
+                // NOTE: This cancelDrag() call is required
+                mDragDropManager.cancelDrag();
+            }
+
+            @Override
+            public void onItemSwipeFinished(int position, int result, int afterSwipeReaction) {
+                mPullToRefreshView.setEnabled(true);
+            }
+        });
 
         mWrapperAdapter = mDragDropManager.createWrappedAdapter(mAdapter);
         mWrapperAdapter = mSwipeManager.createWrappedAdapter(mWrapperAdapter);
 
         recyclerView.setAdapter(mWrapperAdapter);
 
-        mDragDropManager.attachRecyclerView(recyclerView);
         mSwipeManager.attachRecyclerView(recyclerView);
+        mDragDropManager.attachRecyclerView(recyclerView);
 
         mPullToRefreshView = (PullToRefreshView) rootView.findViewById(R.id.pull_to_refresh);
         mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
@@ -138,7 +168,7 @@ public class RecyclerViewFragment extends BaseRefreshFragment {
         // --- SwipeableItemAdapter ---
         @Override
         public SwipeResultAction onSwipeItem(SampleHolder holder, final int position, int result) {
-            if (result == SwipeableItemConstants.RESULT_SWIPED_LEFT) {
+            if (result == SwipeableItemConstants.RESULT_SWIPED_LEFT || result == SwipeableItemConstants.RESULT_SWIPED_RIGHT) {
                 return new SwipeResultActionRemoveItem() {
                     @Override
                     protected void onPerformAction() {
@@ -153,7 +183,7 @@ public class RecyclerViewFragment extends BaseRefreshFragment {
 
         @Override
         public int onGetSwipeReactionType(SampleHolder holder, int position, int x, int y) {
-            return SwipeableItemConstants.REACTION_CAN_SWIPE_LEFT;
+            return SwipeableItemConstants.REACTION_CAN_SWIPE_BOTH_H;
         }
 
         @Override
