@@ -20,5 +20,8 @@ android {
 dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.8.5@aar'){
+        transitive=true
+    }
     compile project(':library')
 }

@@ -17,6 +17,7 @@ public class BaseRefreshFragment extends Fragment {
 
     public static final String KEY_ICON = "icon";
     public static final String KEY_COLOR = "color";
+    public static final String KEY_ID = "id";
 
     protected List<Map<String, Integer>> mSampleList;
 
@@ -24,9 +25,12 @@ public class BaseRefreshFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Map<String, Integer> map;
         mSampleList = new ArrayList<>();
+        createSampleList(mSampleList);
+    }
 
+    protected void createSampleList(List<Map<String, Integer>> list) {
+        Map<String, Integer> map;
         int[] icons = {
                 R.drawable.icon_1,
                 R.drawable.icon_2,
@@ -37,11 +41,14 @@ public class BaseRefreshFragment extends Fragment {
                 R.color.eggplant,
                 R.color.sienna};
 
+        list.clear();
+
         for (int i = 0; i < icons.length; i++) {
             map = new HashMap<>();
+            map.put(KEY_ID, i);
             map.put(KEY_ICON, icons[i]);
             map.put(KEY_COLOR, colors[i]);
-            mSampleList.add(map);
+            list.add(map);
         }
     }
 }
